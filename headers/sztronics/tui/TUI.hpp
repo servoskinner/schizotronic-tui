@@ -8,7 +8,7 @@
 #include <string>
 #include <array>
 
-#include <sztronics/miscellaneous/Vector2.hpp>
+#include <sztronics/miscellaneous/Vector2i.hpp>
 
 #define COLOR_BRIGHT_BLACK		8
 #define COLOR_BRIGHT_RED		9
