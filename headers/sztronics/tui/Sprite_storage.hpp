@@ -1,10 +1,10 @@
 #pragma once
 
-#include "TUI.hpp"
-#include "Sprite.hpp"
-#include "Archivist.hpp"
-#include "Serialization.hpp"
-#include "Misc_functions.hpp"
+#include <sztronics/tui/TUI.hpp>
+#include <sztronics/tui/Sprite.hpp>
+#include <sztronics/miscellaneous/Archivist.hpp>
+#include <sztronics/miscellaneous/Serialization.hpp>
+#include <sztronics/miscellaneous/Misc_functions.hpp>
 
 #include <vector>
 #include <string>

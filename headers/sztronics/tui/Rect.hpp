@@ -10,7 +10,7 @@ class Rect : public TUI::UI_Object
     const TUI::Glyph DEFAULT_LINE = {' ', TUI::TRANSPARENT, TUI::WHITE};
 
     public:
-    Rect(Vector2i size = {0, 0}, Vector2i position = {0, 0}) : size(size), UI_Object(position) {}
+    Rect(Vector2i size = {0, 0}, Vector2i position = {0, 0});
     Rect& operator= (const Rect& other) = default;
 
     Vector2i size;
