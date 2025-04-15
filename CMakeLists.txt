@@ -5,7 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 file(GLOB SOURCES "source/*.cpp")
 
 add_library(sztronics_tui STATIC ${SOURCES})
-target_link_libraries(sztronics_tui PRIVATE sztronics_miscellaneous)
+target_link_libraries(sztronics_tui PUBLIC sztronics_miscellaneous)
 target_link_libraries(sztronics_tui PRIVATE ncurses)
 
 target_include_directories(sztronics_tui PUBLIC headers)
+
+if(ENABLE_DEBUG)
+    target_compile_options(sztronics_tui PRIVATE "-g")
+endif()
