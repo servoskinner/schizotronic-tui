@@ -3,12 +3,18 @@
 
 #include <iostream>
 
+// Static vars
 std::mutex NCursesTUI::ncurses_mutex {};
 std::optional<std::lock_guard<std::mutex>> NCursesTUI::ncurses_mtx_lock {};
 
-TUI& NCursesTUI::get()
-{
+bool NCursesTUI::mouse_enabled = false;
+
+TUI& NCursesTUI::get(bool with_mouse)
+{  
     static NCursesTUI instance;
+    if (with_mouse) {
+        enable_mouse();
+    }
     return instance;
 }
 
@@ -22,9 +28,10 @@ NCursesTUI::NCursesTUI()
 
     initscr();
 
-    raw();                  // No line buffering for keys
+    cbreak();                  // No line buffering for keys
     noecho();               // Do not echo characters in terminal
     curs_set(0);            // Hide cursor   
+    timeout(0);             // Do not block when getting input
 
     start_color(); 
     // init color pairs
@@ -69,22 +76,60 @@ void NCursesTUI::output_glyph(Vector2i pos, Glyph glyph) {
     attroff(COLOR_PAIR(get_color_code(glyph.foreground, glyph.background)));
 }
 
+void NCursesTUI::enable_mouse() {
+    ncurses_mtx_lock.emplace(ncurses_mutex);
+
+    keypad(stdscr, TRUE);
+    mousemask(BUTTON1_CLICKED | BUTTON1_PRESSED |
+              BUTTON3_CLICKED | BUTTON3_PRESSED,
+              nullptr);
+    mouse_enabled = true;
+}
+
+void NCursesTUI::disable_mouse() {
+    ncurses_mtx_lock.emplace(ncurses_mutex);
+
+    keypad(stdscr, FALSE);
+    mousemask(0, nullptr); 
+    mouse_enabled = false;
+}
+
 void NCursesTUI::pre_render() { 
     ncurses_mtx_lock.emplace(ncurses_mutex); 
     // Read input
-    timeout(0);
-    last_input = getch();
-    if (last_input == ERR) {
+    unsigned input = getch();
+
+    if (mouse_enabled && input == KEY_MOUSE) { // Mouse
+        MEVENT mouse_event;
+        if (getmouse(&mouse_event) == OK) {
+            last_mouse.pos = {mouse_event.x, mouse_event.y};
+            last_mouse.left = (mouse_event.bstate & (BUTTON1_PRESSED | BUTTON1_CLICKED));
+            last_mouse.right = (mouse_event.bstate & (BUTTON3_PRESSED | BUTTON3_CLICKED));
+        }
         last_input = 0;
     }
+    else {
+        last_mouse.left = false; last_mouse.right = false;
+        
+        if (input == (unsigned)ERR) { // Error
+            last_input = 0;
+        }
+        else { // Normal input
+            last_input = input;
+        }
+    }
 }
+
 void NCursesTUI::post_render() { 
     ncurses_mtx_lock.reset(); 
 }
 
-unsigned NCursesTUI::get_input()
-{
+unsigned NCursesTUI::get_input(){
     return last_input;
+}
+
+TUI::MouseState NCursesTUI::get_mouse() {
+    return mouse_enabled ? last_mouse : MouseState{};
 }
 
 void NCursesTUI::make_pretty(Rect& rect) {

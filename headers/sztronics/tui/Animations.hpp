@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sztronics/miscellaneous/Vector2i.hpp>
+#include <sztronics/miscellaneous/Vector2.hpp>
 #include <sztronics/tui/TUI.hpp>
 #include <sztronics/tui/UI_Object.hpp>
 #include <sztronics/tui/Rect.hpp>

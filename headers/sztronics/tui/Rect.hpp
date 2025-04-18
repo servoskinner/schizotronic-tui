@@ -2,29 +2,28 @@
 
 #include <sztronics/tui/TUI.hpp>
 #include <sztronics/tui/UI_Object.hpp>
+#include <sztronics/tui/UI_Area.hpp>
 
 /// @brief A rectangle.
-class Rect : public TUI::UI_Object
+class Rect : public UI_Area
 {
     private: 
     const TUI::Glyph DEFAULT_LINE = {' ', TUI::TRANSPARENT, TUI::WHITE};
 
     public:
-    Rect(Vector2i size = {0, 0}, Vector2i position = {0, 0});
+    Rect(Vector2i size = {0, 0}, Vector2i pos = {0, 0});
     Rect& operator= (const Rect& other) = default;
 
-    Vector2i size;
-    Vector2i get_size() const override;
     // Corners
     TUI::Glyph tl_corner = DEFAULT_LINE, tr_corner = DEFAULT_LINE, bl_corner = DEFAULT_LINE, br_corner = DEFAULT_LINE;
-    // 
+    // Borders
     TUI::Glyph t_border = DEFAULT_LINE, b_border = DEFAULT_LINE, l_border = DEFAULT_LINE, r_border = DEFAULT_LINE;
-
+    // Inside
     TUI::Glyph fill = DEFAULT_LINE;
-
+    /// @brief Controls whether the inside part should be drawn.
     bool draw_filled = false;
 
-    // A bunch of specific setters
+    // A bunch of specific setters follow:
 
     inline void set_border_foreground(TUI::Color foreground) {
         tl_corner.foreground = foreground;
@@ -69,19 +68,19 @@ class Rect : public TUI::UI_Object
         fill.background = background;
     }
 
-    inline void set_hborders(TUI::Glyph glyph) {
+    inline void set_hborder(TUI::Glyph glyph) {
         t_border = glyph;
         b_border = glyph;
     }
 
-    inline void set_vborders(TUI::Glyph glyph) {
+    inline void set_vborder(TUI::Glyph glyph) {
         l_border = glyph;
         r_border = glyph;
     }
 
-    inline void set_borders(TUI::Glyph glyph) {
-        set_hborders(glyph);
-        set_vborders(glyph);       
+    inline void set_border(TUI::Glyph glyph) {
+        set_hborder(glyph);
+        set_vborder(glyph);       
     }
 
     inline void set_corners(TUI::Glyph glyph) {
@@ -92,7 +91,7 @@ class Rect : public TUI::UI_Object
     } 
 
     inline void set_all(TUI::Glyph glyph) {
-        set_borders(glyph);
+        set_border(glyph);
         set_corners(glyph);
         fill = glyph;
     } 

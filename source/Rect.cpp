@@ -1,11 +1,6 @@
 #include <sztronics/tui/Rect.hpp>
 
-Rect::Rect(Vector2i size, Vector2i position) : size(size), UI_Object(position) {}
-
-Vector2i Rect::get_size() const
-{
-    return size;
-}
+Rect::Rect(Vector2i size, Vector2i pos) : UI_Area(size, pos) {}
 
 void Rect::draw_self(TUI& tui, unsigned input, Vector2i origin)
 {

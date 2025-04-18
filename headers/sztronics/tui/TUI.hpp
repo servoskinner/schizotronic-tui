@@ -8,7 +8,7 @@
 #include <string>
 #include <array>
 
-#include <sztronics/miscellaneous/Vector2i.hpp>
+#include <sztronics/miscellaneous/Vector2.hpp>
 
 #define COLOR_BRIGHT_BLACK		8
 #define COLOR_BRIGHT_RED		9
@@ -108,6 +108,16 @@ class TUI
 
     /// @return Code of last key pressed or 0 if there is none.
     virtual unsigned get_input() { return 0; };
+
+    /// @brief State of mouse at any given moment, with symbol-wise position precision.
+    struct MouseState {
+        bool left = false;
+        bool right = false;
+        Vector2i pos = {0, 0};
+    };
+    
+    /// @return Mouse state since last update.
+    virtual MouseState get_mouse() { return {}; }
 
     /// @brief Draw differences and synchronize screen buffer.
     void render();

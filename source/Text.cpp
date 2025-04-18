@@ -31,19 +31,25 @@ Vector2i Text::get_size() const {
     }
 }
 
-void Text::set_size_limit(Vector2i new_size_limit) {
-    constraints = new_size_limit;
-    refit_text();
+void Text::set_xylimit(Vector2i xy_lim) {
+    if (constraints != xy_lim) {
+        constraints = xy_lim;
+        refit_text();
+    }
 }
 
 void Text::set_xlimit(int x_lim) {
-    constraints.x = x_lim;
-    refit_text();
+    if (x_lim != constraints.x) {
+        constraints.x = x_lim;
+        refit_text();
+    }
 }
 
 void Text::set_ylimit(int y_lim) {
-    constraints.y = y_lim;
-    refit_text();
+    if (y_lim != constraints.y) {
+        constraints.y = y_lim;
+        refit_text();
+    }
 }
 
 void Text::set_text(std::string new_text) {
@@ -51,9 +57,36 @@ void Text::set_text(std::string new_text) {
     refit_text();
 }
 
+void Text::set_wrap(bool value) {
+    if (wrap != value) {
+        wrap = value;
+        refit_text();
+    }
+}
+
 void Text::refit_text() {
-    text_lines = wrap_text(raw_text, constraints.x);
-    if (constraints.y > 0 && text_lines.size() > constraints.y) {
-        text_lines.resize(constraints.y);
+    if (wrap) {
+        text_lines = wrap_text(raw_text, constraints.x);
+        if (constraints.y > 0 && text_lines.size() > constraints.y) {
+            text_lines.resize(constraints.y);
+        }
+    }
+    else {
+        // No wrap -- trim individual lines instead
+        text_lines = {};
+        std::string line = "";
+        for(char ch : raw_text) {
+            if (ch != '\n') {
+                if(constraints.x <= 0 || line.size() < constraints.x) {
+                    line += ch;
+                }
+            }
+            else if (constraints.y <= 0 || text_lines.size() < constraints.y) {
+                text_lines.emplace_back(std::move(line));
+            }
+            else {
+                break;
+            }
+        }
     }
 }

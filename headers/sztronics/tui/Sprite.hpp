@@ -1,7 +1,7 @@
 #pragma once
 
-#include "TUI.hpp"
-#include "UI_Object.hpp"
+#include <sztronics/tui/TUI.hpp>
+#include <sztronics/tui/UI_Object.hpp>
 
 /// @brief A drawable patch of individually adjustable Glyphs.
 class Sprite : public TUI::UI_Object

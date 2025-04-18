@@ -13,11 +13,19 @@ class NCursesTUI : public TUI
     /// @return Code of last key pressed
     unsigned get_input() override;
 
+    /// @return Mouse state since last update.
+    MouseState get_mouse() override;
+
     /// @return Terminal dimensions
     Vector2i get_screen_size() const override;
 
+    // Mouse input control
+    static void enable_mouse();
+    static void disable_mouse();
+    static inline bool supports_mouse() { return has_mouse(); }
+
     /// @return The active instance of TUI.
-    static TUI& get();
+    static TUI& get(bool with_mouse = false);
     ~NCursesTUI() override;
 
     Color default_background = BLACK;
@@ -41,14 +49,14 @@ class NCursesTUI : public TUI
     /// @brief Maps color combinations to color pair ids.
     unsigned short get_color_code(Color foreground, Color background) const;
 
-    protected:
-
     unsigned last_input = 0;
+    MouseState last_mouse = {};
+
+    static bool mouse_enabled;
 
     void pre_render() override;
     void post_render() override;
 
     private:
-
     NCursesTUI();
 };

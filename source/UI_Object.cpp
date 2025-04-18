@@ -11,22 +11,25 @@ Vector2i TUI::UI_Object::get_size() const
 void TUI::UI_Object::draw(TUI& tui, unsigned input, Vector2i origin)
 {
     if (visible)
-    {
+    {   
+        Vector2i own_size = get_size();
+        Vector2i pivot_offset = -own_size * pivot;
         // Draw self first
-        draw_self(tui, input, origin + position);
+        draw_self(tui, input, origin + position + pivot_offset);
 
         // Draw children in depth-wise succession
-        for (auto& child : children) {
-            if (child->use_absolute_position) {
-                child->draw(tui, input, origin);
+        for (auto& child_ptr : children) {
+            if (!child_ptr) {
+                continue;
+            }
+            UI_Object& child = *child_ptr;
+
+            if (child.use_absolute_position) {
+                child.draw(tui, input, origin);
             }
             else {
-                Vector2i child_dimensions = child->get_size();
-                Vector2i offset = get_size() - child_dimensions;
-
-                Vector2i anchor_offset = { (offset.x * (int)child->horizontal_anchor)/2, (offset.y * (int)child->vertical_anchor)/2 };
-
-                child->draw(tui, input, origin + position + anchor_offset);
+                Vector2i alignment_offset = own_size * child.alignment;
+                child.draw(tui, input, origin + position + alignment_offset + pivot_offset);
             }
         }
     }
